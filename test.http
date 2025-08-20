@@ -1,0 +1,72 @@
+### ===== 알림 서비스 API 테스트 =====
+
+### 1. 알림 전송 (사용자 A가 사용자 B에게)
+POST http://localhost:8080/api/notifications/send
+Content-Type: application/json
+
+{
+    "senderId": "userA",
+    "receiverId": "userB",
+    "message": "안녕하세요! 이것은 테스트 메시지입니다.",
+    "type": "MESSAGE"
+}
+
+### 2. 사용자 B의 모든 알림 조회
+GET http://localhost:8080/api/notifications/user/userB
+
+### 3. 사용자 B의 읽지 않은 알림 조회
+GET http://localhost:8080/api/notifications/user/userB/unread
+
+### 4. 사용자 B의 읽지 않은 알림 개수 조회
+GET http://localhost:8080/api/notifications/user/userB/unread-count
+
+### 5. 특정 알림 읽음 처리 (알림 ID 1번)
+PUT http://localhost:8080/api/notifications/1/read
+
+### 6. 사용자 B의 모든 알림 읽음 처리
+PUT http://localhost:8080/api/notifications/user/userB/read-all
+
+### ===== WebSocket 테스트 =====
+
+### 7. WebSocket 테스트 - 사용자 B에게 테스트 메시지 전송
+POST http://localhost:8080/api/websocket-test/send-test-message/userB
+Content-Type: application/json
+
+{
+    "message": "이것은 WebSocket 테스트 메시지입니다!"
+}
+
+### 8. WebSocket 테스트 - 사용자 A에게 테스트 메시지 전송
+POST http://localhost:8080/api/websocket-test/send-test-message/userA
+Content-Type: application/json
+
+{
+    "message": "사용자 A에게 보내는 테스트 메시지입니다!"
+}
+
+
+
+### ===== 추가 테스트 시나리오 =====
+
+### 9. 여러 알림 전송 테스트
+POST http://localhost:8080/api/notifications/send
+Content-Type: application/json
+
+{
+    "senderId": "userC",
+    "receiverId": "userB",
+    "message": "회의 시간이 변경되었습니다.",
+    "type": "MEETING"
+}
+
+### 10. 다른 타입의 알림 전송
+POST http://localhost:8080/api/notifications/send
+Content-Type: application/json
+
+{
+    "senderId": "system",
+    "receiverId": "userB",
+    "message": "시스템 점검이 완료되었습니다.",
+    "type": "SYSTEM"
+}
+
