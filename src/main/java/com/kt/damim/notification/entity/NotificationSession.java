@@ -9,22 +9,22 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_sessions")
+@Table(name = "notification_sessions")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserSession {
+public class NotificationSession {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "socket_user_id", nullable = false)
+    private String socketUserId;
     
-    @Column(name = "session_id", nullable = false, unique = true)
-    private String sessionId;
+    @Column(name = "socket_session_id", nullable = false, unique = true)
+    private String socketSessionId;
     
     @Column(name = "connected_at", nullable = false)
     private LocalDateTime connectedAt;

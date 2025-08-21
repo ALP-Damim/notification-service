@@ -1,6 +1,6 @@
 package com.kt.damim.notification.config;
 
-import com.kt.damim.notification.service.UserSessionService;
+import com.kt.damim.notification.service.NotificationSessionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -15,7 +15,7 @@ import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 @Slf4j
 public class WebSocketEventListener {
     
-    private final UserSessionService userSessionService;
+    private final NotificationSessionService notificationSessionService;
     
     /**
      * WebSocket 연결 완료 시 임시 세션 등록
@@ -23,10 +23,10 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectedListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
+        String socketSessionId = headerAccessor.getSessionId();
         
-        log.info("WebSocket 연결 완료: sessionId={}", sessionId);
-        userSessionService.registerTemporarySession(sessionId);
+        log.info("WebSocket 연결 완료: socketSessionId={}", socketSessionId);
+        notificationSessionService.registerTemporarySession(socketSessionId);
     }
     
     /**
@@ -35,14 +35,14 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketSubscribeListener(SessionSubscribeEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
+        String socketSessionId = headerAccessor.getSessionId();
         String destination = headerAccessor.getDestination();
         
         // 알림 토픽 구독 시 사용자 ID 추출
         if (destination != null && destination.startsWith("/topic/notifications/")) {
-            String userId = destination.substring("/topic/notifications/".length());
-            log.info("사용자 구독: userId={}, sessionId={}", userId, sessionId);
-            userSessionService.updateSessionWithUserId(sessionId, userId);
+            String socketUserId = destination.substring("/topic/notifications/".length());
+            log.info("사용자 구독: socketUserId={}, socketSessionId={}", socketUserId, socketSessionId);
+            notificationSessionService.updateSessionWithUserId(socketSessionId, socketUserId);
         }
     }
     
@@ -52,9 +52,9 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String sessionId = headerAccessor.getSessionId();
+        String socketSessionId = headerAccessor.getSessionId();
         
-        log.info("WebSocket 연결 해제: sessionId={}", sessionId);
-        userSessionService.unregisterUserSession(sessionId);
+        log.info("WebSocket 연결 해제: socketSessionId={}", socketSessionId);
+        notificationSessionService.unregisterUserSession(socketSessionId);
     }
 }

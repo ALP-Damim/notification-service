@@ -20,7 +20,7 @@ public class NotificationService {
     
     private final NotificationRepository notificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final UserSessionService userSessionService;
+    private final NotificationSessionService notificationSessionService;
     
     @Transactional
     public NotificationResponse sendNotification(NotificationRequest request) {
@@ -38,7 +38,7 @@ public class NotificationService {
         NotificationResponse response = convertToResponse(savedNotification);
         String destination = "/topic/notifications/" + request.getReceiverId();
         
-        boolean messageSent = userSessionService.sendMessageToUser(request.getReceiverId(), destination, response);
+        boolean messageSent = notificationSessionService.sendMessageToUser(request.getReceiverId(), destination, response);
         
         if (!messageSent) {
             log.warn("사용자가 연결되어 있지 않음: receiverId={}", request.getReceiverId());
